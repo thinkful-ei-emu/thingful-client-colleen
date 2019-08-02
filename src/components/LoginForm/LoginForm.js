@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import TokenService from '../../services/token-service';
+//import TokenService from '../../services/token-service';
 import { Button, Input } from '../Utils/Utils'
 import AuthApiService from '../../services/auth-api-service'
 
@@ -33,7 +33,7 @@ handleSubmitJwtAuth = ev =>{
   .then(res=> {
     user_name.value = ''
     password.value = ''
-    TokenService.saveAuthToken(res.authToken)
+    //TokenService.saveAuthToken(res.authToken)
     this.props.onLoginSuccess()
   })
   .catch(res=>{
