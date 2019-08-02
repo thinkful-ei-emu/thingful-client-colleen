@@ -8,6 +8,9 @@ import ThingPage from '../../routes/ThingPage/ThingPage'
 import LoginPage from '../../routes/LoginPage/LoginPage'
 import RegistrationPage from '../../routes/RegistrationPage/RegistrationPage'
 import NotFoundPage from '../../routes/NotFoundPage/NotFoundPage'
+import TokenService from '../../services/token-service'
+import AuthApiService from '../../services/auth-api-service'
+import IdleService from '../../services/idle-service'
 import './App.css'
 
 class App extends Component {
@@ -18,6 +21,26 @@ class App extends Component {
     return { hasError: true }
   }
 
+  componentDidMount(){
+    IdleService.setIdleCallback(this.logoutFromIdle)
+
+    if(TokenService.hasAuthToken()){
+      IdleService.registerIdleTimerResets()
+      TokenService.queueCallbackBeforeExpiry(()=> {
+        AuthApiService.postRefreshToken()
+      })
+    }
+  }
+  componentWillUnmount(){
+    IdleService.unRegisterIdleResets()
+    TokenService.clearCallbackBeforeExpiry()
+  }
+  logoutFromIdle = ()=> {
+    TokenService.clearAuthToken()
+    TokenService.clearCallbackBeforeExpiry()
+    IdleService.unRegisterIdleResets()
+    this.forceUpdate()
+  }
   render() {
     return (
       <div className='App'>
